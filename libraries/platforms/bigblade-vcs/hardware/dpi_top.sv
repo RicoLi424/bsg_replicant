@@ -53,6 +53,10 @@ module replicant_tb_top
       $display("[INFO][TESTBENCH] bsg_machine_llcache_dram_channel_ratio_gp = %d", bsg_machine_llcache_dram_channel_ratio_gp);
       $display("[INFO][TESTBENCH] bsg_machine_llcache_word_tracking_gp  = %d", bsg_machine_llcache_word_tracking_gp);
 
+      $display("[INFO][TESTBENCH] bsg_machine_llcache_mshr_els_gp       = %d", bsg_machine_llcache_mshr_els_gp);
+      $display("[INFO][TESTBENCH] bsg_machine_llcache_read_miss_els_per_mshr_gp  = %d", bsg_machine_llcache_read_miss_els_per_mshr_gp);
+      $display("[INFO][TESTBENCH] bsg_machine_llcache_non_blocking_gp  = %d", bsg_machine_llcache_non_blocking_gp);
+
       $display("[INFO][TESTBENCH] bsg_machine_dram_bank_words_gp        = %d", bsg_machine_dram_bank_words_gp);
       $display("[INFO][TESTBENCH] bsg_machine_dram_channels_gp          = %d", bsg_machine_dram_channels_gp);
       $display("[INFO][TESTBENCH] bsg_machine_dram_words_gp             = %d", bsg_machine_dram_words_gp);
@@ -200,7 +204,78 @@ module replicant_tb_top
       );
    assign core_reset = core_bit_reset;
 
-   bsg_nonsynth_manycore_testbench
+
+
+  if (bsg_machine_llcache_non_blocking_gp) begin: nb
+    bsg_nonsynth_manycore_testbench_nb
+     #(
+       .num_pods_x_p(bsg_machine_pods_x_gp)
+       ,.num_pods_y_p(bsg_machine_pods_y_gp)
+       ,.pod_x_cord_width_p(bsg_machine_noc_pod_coord_x_width_gp)
+       ,.pod_y_cord_width_p(bsg_machine_noc_pod_coord_y_width_gp)
+
+       ,.num_tiles_x_p(bsg_machine_pod_tiles_x_gp)
+       ,.num_tiles_y_p(bsg_machine_pod_tiles_y_gp)
+       ,.num_subarray_x_p(bsg_machine_pod_tiles_subarray_x_gp)
+       ,.num_subarray_y_p(bsg_machine_pod_tiles_subarray_y_gp)
+
+       ,.x_cord_width_p(bsg_machine_noc_coord_x_width_gp)
+       ,.y_cord_width_p(bsg_machine_noc_coord_y_width_gp)
+
+       ,.addr_width_p(bsg_machine_noc_epa_width_gp)
+       ,.data_width_p(bsg_machine_noc_data_width_gp)
+       ,.dmem_size_p(bsg_machine_core_dmem_words_gp)
+       ,.icache_block_size_in_words_p(bsg_machine_core_icache_line_words_gp)
+       ,.icache_entries_p(bsg_machine_core_icache_entries_gp)
+       ,.icache_tag_width_p(bsg_machine_core_icache_tag_width_gp)
+
+       ,.ruche_factor_X_p(bsg_machine_noc_ruche_factor_X_gp)
+       ,.barrier_ruche_factor_X_p(bsg_machine_barrier_ruche_factor_X_gp)
+
+       ,.num_vcache_rows_p(bsg_machine_pod_llcache_rows_gp)
+       ,.num_vcaches_per_channel_p(bsg_machine_llcache_dram_channel_ratio_gp)
+       ,.vcache_data_width_p(bsg_machine_llcache_data_width_lp)
+       ,.vcache_addr_width_p(bsg_machine_llcache_addr_width_lp)
+       ,.vcache_size_p(bsg_machine_llcache_words_gp)
+       ,.vcache_sets_p(bsg_machine_llcache_sets_gp)
+       ,.vcache_ways_p(bsg_machine_llcache_ways_gp)
+       ,.vcache_block_size_in_words_p(bsg_machine_llcache_line_words_gp)
+       ,.vcache_dma_data_width_p(bsg_machine_llcache_channel_width_gp)
+       ,.vcache_word_tracking_p(0)
+
+       ,.vcache_mshr_els_p(bsg_machine_llcache_mshr_els_gp)
+       ,.vcache_read_miss_els_per_mshr_p(bsg_machine_llcache_read_miss_els_per_mshr_gp)
+
+       ,.wh_flit_width_p(bsg_machine_wh_flit_width_lp)
+       ,.wh_ruche_factor_p(bsg_machine_wh_ruche_factor_lp)
+       ,.wh_cid_width_p(bsg_machine_wh_cid_width_lp)
+       ,.wh_len_width_p(bsg_machine_wh_len_width_lp)
+       ,.wh_cord_width_p(bsg_machine_wh_coord_width_lp)
+
+       ,.bsg_manycore_mem_cfg_p(bsg_machine_dram_cfg_gp)
+       ,.bsg_dram_size_p(bsg_machine_dram_words_gp)
+
+       ,.enable_vcore_profiling_p(bsg_machine_enable_vcore_profiling_lp)
+       ,.enable_router_profiling_p(bsg_machine_enable_router_profiling_lp)
+       ,.enable_cache_profiling_p(bsg_machine_enable_cache_profiling_lp)
+       ,.enable_remote_op_profiling_p(bsg_machine_enable_remote_op_profiling_lp)
+       ,.enable_vanilla_core_pc_histogram_p(bsg_machine_enable_vcore_pc_histogram_lp)
+       ,.hetero_type_vec_p(bsg_machine_hetero_type_vec_gp)
+
+       ,.reset_depth_p(reset_depth_lp)
+       ) testbench (
+      .clk_i(core_clk)
+      ,.dram_clk_i(dram_clk)
+      ,.reset_i(core_reset)
+
+      ,.io_link_sif_i(host_link_sif_li)
+      ,.io_link_sif_o(host_link_sif_lo)
+
+      ,.tag_done_o(core_reset_done_lo)
+      );  
+  end 
+  else begin: blk 
+    bsg_nonsynth_manycore_testbench
      #(
        .num_pods_x_p(bsg_machine_pods_x_gp)
        ,.num_pods_y_p(bsg_machine_pods_y_gp)
@@ -265,6 +340,8 @@ module replicant_tb_top
 
       ,.tag_done_o(core_reset_done_lo)
       );
+  end    
+
 
    bsg_nonsynth_dpi_gpio
      #(

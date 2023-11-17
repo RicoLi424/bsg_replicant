@@ -69,9 +69,12 @@ BSG_MACHINE_VCACHE_SET                = 64
 BSG_MACHINE_VCACHE_WAY                = 8
 BSG_MACHINE_VCACHE_LINE_WORDS         = 16
 BSG_MACHINE_VCACHE_STRIPE_WORDS       = $(BSG_MACHINE_VCACHE_LINE_WORDS)
-BSG_MACHINE_VCACHE_WORD_TRACKING      = 1
+BSG_MACHINE_VCACHE_WORD_TRACKING      = 0
 # Only applies to Non-blocking Cache
 BSG_MACHINE_VCACHE_MISS_FIFO_ELS      = 32
+BSG_MACHINE_VCACHE_MSHR_ELS_P         = 1
+BSG_MACHINE_VCACHE_READ_MISS_ELS_PER_MSHR_P = 16
+BSG_MACHINE_VCACHE_NON_BLOCKING_P     = 1
 
 # Number of vcache tile rows in a cache pod on either side of a tile pod
 BSG_MACHINE_POD_VCACHE_NUM_ROWS       = 1
@@ -101,7 +104,7 @@ BSG_MACHINE_ORIGIN_COORD_Y            = 8
 
 # Cache-DRAM Interface Width (Rarely Changed)
 # TODO: change this to match the HBM channel data rate
-BSG_MACHINE_VCACHE_DMA_DATA_WIDTH     = 32
+BSG_MACHINE_VCACHE_DMA_DATA_WIDTH     = 64
 
 # IO flow control parameters. (Rarely Changed)
 BSG_MACHINE_IO_EP_CREDITS             = 32
